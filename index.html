@@ -3,7 +3,17 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Mint Your NFT</title>
+  <title>Claim Your NFT</title>
+
+  <!-- Warpcast Frame Meta Tags -->
+  <meta property="og:title" content="Claim Your NFT" />
+  <meta property="og:image" content="https://i.postimg.cc/nLGxKNHC/ty3rr6t.jpg" />
+  <meta name="fc:frame" content="vNext" />
+  <meta name="fc:frame:image" content="https://i.postimg.cc/nLGxKNHC/ty3rr6t.jpg" />
+  <meta name="fc:frame:button:1" content="Mint NFT" />
+  <meta name="fc:frame:button:1:action" content="post_redirect" />
+  <meta name="fc:frame:button:1:target" content="https://p3-ochre.vercel.app/" />
+
   <style>
     body { font-family: Arial, sans-serif; text-align: center; padding: 50px; }
     img { max-width: 300px; border-radius: 12px; margin-bottom: 20px; }
@@ -17,6 +27,9 @@
       cursor: pointer;
     }
   </style>
+
+  <!-- Ethers.js -->
+  <script src="https://cdn.jsdelivr.net/npm/ethers@6.6.2/dist/ethers.min.js"></script>
 </head>
 <body>
 
@@ -27,8 +40,31 @@
   <button onclick="mint()">Mint NFT</button>
 
   <script>
-    function mint() {
-      window.open("https://magiceden.io/mint-terminal/monad-testnet/0xb0f24fafa90314eb8ba3cba71feb45cd8c18c191", "_blank");
+    async function mint() {
+      try {
+        if (!window.ethereum) {
+          alert("Please install MetaMask!");
+          return;
+        }
+
+        const provider = new ethers.BrowserProvider(window.ethereum);
+        const signer = await provider.getSigner();
+
+        const contractAddress = "0xb0f24fafa90314eb8ba3cba71feb45cd8c18c191";
+        const abi = [
+          // Adjust this if your contract uses a different function or has arguments
+          "function mint() public"
+        ];
+
+        const contract = new ethers.Contract(contractAddress, abi, signer);
+        const tx = await contract.mint();
+        alert("Transaction sent! TX Hash: " + tx.hash);
+        await tx.wait();
+        alert("Mint successful!");
+      } catch (err) {
+        console.error(err);
+        alert("Mint failed: " + (err.message || err));
+      }
     }
   </script>
 
