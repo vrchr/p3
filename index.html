@@ -5,14 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Claim Your NFT</title>
 
-  <!-- Warpcast Frame Meta Tags -->
-  <meta property="og:title" content="Claim Your NFT" />
-  <meta property="og:image" content="https://i.postimg.cc/nLGxKNHC/ty3rr6t.jpg" />
+  <!-- Farcaster Mini App Meta Tags -->
   <meta name="fc:frame" content="vNext" />
   <meta name="fc:frame:image" content="https://i.postimg.cc/nLGxKNHC/ty3rr6t.jpg" />
   <meta name="fc:frame:button:1" content="Mint NFT" />
-  <meta name="fc:frame:button:1:action" content="post_redirect" />
-  <meta name="fc:frame:button:1:target" content="https://p3-ochre.vercel.app/" />
+  <meta name="fc:frame:button:1:action" content="link" />
+  <meta name="fc:frame:button:1:target" content="https://your-mini-app-url.com/mint" />
 
   <style>
     body { font-family: Arial, sans-serif; text-align: center; padding: 50px; }
@@ -28,8 +26,33 @@
     }
   </style>
 
-  <!-- Ethers.js -->
-  <script src="https://cdn.jsdelivr.net/npm/ethers@6.6.2/dist/ethers.min.js"></script>
+  <!-- Include Ethers.js -->
+  <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.min.js"></script>
+  <!-- Include Farcaster Frame SDK -->
+  <script type="module">
+    import { sdk } from 'https://esm.sh/@farcaster/frame-sdk';
+
+    async function mintNFT() {
+      try {
+        const provider = new ethers.providers.Web3Provider(sdk.wallet.ethProvider);
+        const signer = provider.getSigner();
+        const contractAddress = '0xb0f24fafa90314eb8ba3cba71feb45cd8c18c191';
+        const abi = [
+          // Replace with your contract's ABI
+          'function mint() public'
+        ];
+        const contract = new ethers.Contract(contractAddress, abi, signer);
+        const tx = await contract.mint();
+        await tx.wait();
+        alert('Mint successful!');
+      } catch (error) {
+        console.error(error);
+        alert('Mint failed: ' + error.message);
+      }
+    }
+
+    window.mintNFT = mintNFT;
+  </script>
 </head>
 <body>
 
@@ -37,36 +60,7 @@
   <img src="https://i.postimg.cc/nLGxKNHC/ty3rr6t.jpg" alt="NFT Image" />
   <br><br>
 
-  <button onclick="mint()">Mint NFT</button>
-
-  <script>
-    async function mint() {
-      try {
-        if (!window.ethereum) {
-          alert("Please install MetaMask!");
-          return;
-        }
-
-        const provider = new ethers.BrowserProvider(window.ethereum);
-        const signer = await provider.getSigner();
-
-        const contractAddress = "0xb0f24fafa90314eb8ba3cba71feb45cd8c18c191";
-        const abi = [
-          // Adjust this if your contract uses a different function or has arguments
-          "function mint() public"
-        ];
-
-        const contract = new ethers.Contract(contractAddress, abi, signer);
-        const tx = await contract.mint();
-        alert("Transaction sent! TX Hash: " + tx.hash);
-        await tx.wait();
-        alert("Mint successful!");
-      } catch (err) {
-        console.error(err);
-        alert("Mint failed: " + (err.message || err));
-      }
-    }
-  </script>
+  <button onclick="mintNFT()">Mint NFT</button>
 
 </body>
 </html>
