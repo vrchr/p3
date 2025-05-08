@@ -1,66 +1,54 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Claim Your NFT</title>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Mint NFT Mini App</title>
+    <script type="module">
+      import { sdk } from 'https://esm.sh/@farcaster/frame-sdk';
 
-  <!-- Farcaster Mini App Meta Tags -->
-  <meta name="fc:frame" content="vNext" />
-  <meta name="fc:frame:image" content="https://i.postimg.cc/nLGxKNHC/ty3rr6t.jpg" />
-  <meta name="fc:frame:button:1" content="Mint NFT" />
-  <meta name="fc:frame:button:1:action" content="link" />
-  <meta name="fc:frame:button:1:target" content="https://your-mini-app-url.com/mint" />
+      const frame = sdk.init();
 
-  <style>
-    body { font-family: Arial, sans-serif; text-align: center; padding: 50px; }
-    img { max-width: 300px; border-radius: 12px; margin-bottom: 20px; }
-    button {
-      background-color: #6c47ff;
-      color: white;
-      border: none;
-      padding: 12px 24px;
-      border-radius: 8px;
-      font-size: 16px;
-      cursor: pointer;
-    }
-  </style>
+      // Wait for the frame to be ready
+      frame.ready().then(async () => {
+        const user = await frame.getUser();
 
-  <!-- Include Ethers.js -->
-  <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.min.js"></script>
-  <!-- Include Farcaster Frame SDK -->
-  <script type="module">
-    import { sdk } from 'https://esm.sh/@farcaster/frame-sdk';
+        document.getElementById('status').innerText = `Hello, @${user.username}!`;
 
-    async function mintNFT() {
-      try {
-        const provider = new ethers.providers.Web3Provider(sdk.wallet.ethProvider);
-        const signer = provider.getSigner();
-        const contractAddress = '0xb0f24fafa90314eb8ba3cba71feb45cd8c18c191';
-        const abi = [
-          // Replace with your contract's ABI
-          'function mint() public'
-        ];
-        const contract = new ethers.Contract(contractAddress, abi, signer);
-        const tx = await contract.mint();
-        await tx.wait();
-        alert('Mint successful!');
-      } catch (error) {
-        console.error(error);
-        alert('Mint failed: ' + error.message);
+        // Mint button click handler
+        document.getElementById('mintButton').addEventListener('click', () => {
+          // Redirect to the Magic Eden mint page
+          window.open("https://magiceden.io/mint-terminal/monad-testnet/0xb0f24fafa90314eb8ba3cba71feb45cd8c18c191", "_blank");
+        });
+      });
+    </script>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        text-align: center;
+        padding: 40px;
       }
-    }
-
-    window.mintNFT = mintNFT;
-  </script>
-</head>
-<body>
-
-  <h1>Claim Your NFT</h1>
-  <img src="https://i.postimg.cc/nLGxKNHC/ty3rr6t.jpg" alt="NFT Image" />
-  <br><br>
-
-  <button onclick="mintNFT()">Mint NFT</button>
-
-</body>
+      img {
+        max-width: 300px;
+        border-radius: 12px;
+        margin-bottom: 20px;
+      }
+      button {
+        background-color: #6c47ff;
+        color: white;
+        border: none;
+        padding: 12px 24px;
+        border-radius: 8px;
+        font-size: 16px;
+        cursor: pointer;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Claim Your NFT</h1>
+    <p id="status">Loading...</p>
+    <img src="https://i.postimg.cc/nLGxKNHC/ty3rr6t.jpg" alt="NFT Image" />
+    <br /><br />
+    <button id="mintButton">Mint NFT</button>
+  </body>
 </html>
